@@ -180,6 +180,9 @@ jobs:
           path: ./build/
           merge-multiple: true
 
+      - name: Debug, check contents of build folder
+        run: ls -la ./build
+
       - name: Create new release
         id: create_release
         env:
