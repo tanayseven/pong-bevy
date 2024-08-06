@@ -173,12 +173,12 @@ jobs:
           path: ./build/
           merge-multiple: true
 
-#      - name: Download macos-apple-silicon artifacts
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: build-macos-apple-silicon
-#          path: ./build/
-#          merge-multiple: true
+      - name: Download macos-apple-silicon artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-macos-apple-silicon
+          path: ./build/
+          merge-multiple: true
 
       - name: Create new release
         id: create_release
