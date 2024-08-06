@@ -9,3 +9,15 @@ edition = "2021"
 bevy = "0.14"
 bevy_rapier2d = "0.27.0"
 rand = "*"
+
+[profile.release]
+opt-level = "z"
+strip = "symbols"
+lto = "fat"
+codegen-units = 1
+panic = 'abort'
+
+[profile.release.package."*"]
+opt-level = "z"
+strip = "symbols"
+codegen-units = 1
