@@ -128,7 +128,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-macos-apple-silicon
-          path: target/release/bevy_pong_mac_apple_silicon
+          path: bevy_pong_mac_apple_silicon
 
   release:
     needs: [build-linux-and-web, build-windows, build-macos-intel, build-macos-apple-silicon]
@@ -179,9 +179,6 @@ jobs:
           name: build-macos-apple-silicon
           path: ./build/
           merge-multiple: true
-
-      - name: Debug, check contents of build folder
-        run: ls -la ./build
 
       - name: Create new release
         id: create_release
