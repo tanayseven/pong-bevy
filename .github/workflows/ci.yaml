@@ -50,7 +50,7 @@ jobs:
       - name: Build Web
         run: |
           rustup target add wasm32-unknown-unknown
-          cargo build --release
+          cargo build --target wasm32-unknown-unknown --release
           cargo install wasm-bindgen-cli
           wasm-bindgen --no-typescript --target web --out-dir ./out/ --out-name "bevy_pong" ./target/wasm32-unknown-unknown/release/bevy_pong.wasm
           zip bevy_pong_wasm.zip  out/*
