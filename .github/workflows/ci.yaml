@@ -186,7 +186,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh auth status
-          gh release create latest --title "Breakout - latest" --notes "Find the latest release of breakout that matches your platform"
+          gh release create latest --title "Pong - latest" --notes "Find the latest release of pong that matches your platform"
           gh release upload latest ./build/bevy_pong_wasm.zip
           gh release upload latest ./build/bevy_pong_linux
           gh release upload latest ./build/bevy_pong_windows.exe
