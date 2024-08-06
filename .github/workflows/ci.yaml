@@ -45,6 +45,7 @@ jobs:
       - name: Build
         run: |
           cargo build --release --target x86_64-unknown-linux-gnu --verbose
+          ls -R
           cp target/release/bevy_pong bevy_pong_linux
 
       - name: Build Web
