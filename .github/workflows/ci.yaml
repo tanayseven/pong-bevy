@@ -206,6 +206,17 @@ jobs:
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
           ITCHIO_USER: tanayseven
-          ITCHIO_GAME: breakout-ebitengine
+          ITCHIO_GAME: pong-bevy
         run: |
           ./butler login
+          ./butler push ./build/bevy_pong_linux ${ITCHIO_USER}/${ITCHIO_GAME}:linux --if-changed --userversion=latest
+          ./check-if-deployed.sh ${ITCHIO_USER}/${ITCHIO_GAME}:linux
+          unzip ./build/bevy_pong_wasm.zip -d ./build/bevy_pong_wasm
+          ./butler push ./build/bevy_pong_wasm/out ${ITCHIO_USER}/${ITCHIO_GAME}:html --if-changed --userversion=latest
+          ./check-if-deployed.sh ${ITCHIO_USER}/${ITCHIO_GAME}:html
+          ./butler push ./build/bevy_pong_windows.exe ${ITCHIO_USER}/${ITCHIO_GAME}:windows --if-changed --userversion=latest
+          ./check-if-deployed.sh ${ITCHIO_USER}/${ITCHIO_GAME}:windows
+          ./butler push ./build/bevy_pong_mac_intel ${ITCHIO_USER}/${ITCHIO_GAME}:osx --if-changed --userversion=latest
+          ./check-if-deployed.sh ${ITCHIO_USER}/${ITCHIO_GAME}:osx
+          ./butler push ./build/bevy_pong_mac_apple_silicon ${ITCHIO_USER}/${ITCHIO_GAME}:osx --if-changed --userversion=latest
+          ./check-if-deployed.sh ${ITCHIO_USER}/${ITCHIO_GAME}:osx
