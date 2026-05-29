@@ -101,7 +101,7 @@ jobs:
 
   build-macos-intel:
 
-    runs-on: macos-13
+    runs-on: macos-latest
     needs: test-and-build
 
     steps:
@@ -112,8 +112,9 @@ jobs:
 
       - name: Build
         run: |
-          cargo build --release
-          cp target/release/bevy_pong bevy_pong_mac_intel
+          rustup target add x86_64-apple-darwin
+          cargo build --release --target x86_64-apple-darwin
+          cp target/x86_64-apple-darwin/release/bevy_pong bevy_pong_mac_intel
 
       - name: Upload macos-intel build artifact
         id: upload_macos_intel_artifacts
