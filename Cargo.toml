@@ -10,6 +10,9 @@ bevy = "0.18"
 bevy_rapier2d = "0.34"
 rand = "0.10"
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.4", features = ["wasm_js"] }
+
 [profile.release]
 opt-level = "z"
 strip = "symbols"
