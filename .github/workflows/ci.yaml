@@ -17,6 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install mise
+      uses: jdx/mise-action@v2
+
     - name: Install Dependencies
       run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
 
@@ -39,6 +42,9 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
       - name: Install Dependencies
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
 
@@ -54,7 +60,7 @@ jobs:
           cargo install wasm-bindgen-cli
           wasm-bindgen --no-typescript --target web --out-dir ./out/ --out-name "bevy_pong" ./target/wasm32-unknown-unknown/release/bevy_pong.wasm
           zip bevy_pong_wasm.zip  out/*
-          
+
       - name: Upload linux build artifact
         id: upload_linux_artifacts
         uses: actions/upload-artifact@v4
@@ -78,6 +84,9 @@ jobs:
 
         - uses: actions/checkout@v4
 
+        - name: Install mise
+          uses: jdx/mise-action@v2
+
         - name: Build
           run: |
             cargo build --release
@@ -98,6 +107,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
       - name: Build
         run: |
           cargo build --release
@@ -117,6 +129,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install mise
+        uses: jdx/mise-action@v2
 
       - name: Build
         run: |
