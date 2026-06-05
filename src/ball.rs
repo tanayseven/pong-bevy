@@ -51,49 +51,67 @@ pub fn move_ball(mut ball: Query<(&mut Transform, &mut Ball)>, time: Res<Time>) 
 // there is no overlap and they can run safely — even in parallel if Bevy's
 // scheduler decides to.
 pub fn ball_collide(
-    mut balls: Query<(&Transform, &mut Ball)>,
-    // `With<Paddle>` is a query filter: include only entities that have the
-    // Paddle component, even though we don't read Paddle's data here.
-    // It narrows the query to avoid testing the ball against itself.
+    mut balls: Query<(&mut Transform, &mut Ball), Without<Paddle>>,
     paddles: Query<&Transform, With<Paddle>>,
 ) {
-    for (ball, mut velocity) in &mut balls {
-        // Bottom wall: bounce when the ball's lower edge hits the floor.
-        if ball.translation.y - BALL_DIMENSION / 2. < -crate::WINDOW_HEIGHT / 2. {
+    for (mut ball, mut velocity) in &mut balls {
+        // Bottom wall: only bounce when moving downward — prevents a double-flip
+        // if the ball is still below the boundary on the next frame.
+        if ball.translation.y - BALL_DIMENSION / 2. < -crate::WINDOW_HEIGHT / 2.
+            && velocity.0.y < 0.
+        {
             velocity.0.y *= -1.;
         }
-        // Top wall: bounce off the bottom edge of the ScoreBar, not the raw
-        // window top. SCOREBAR_HEIGHT (47px) is subtracted so the ball never
-        // slides behind the UI bar.
-        if ball.translation.y + BALL_DIMENSION / 2. > crate::WINDOW_HEIGHT / 2. - SCOREBAR_HEIGHT {
+        // Top wall: same guard, only flip when moving upward.
+        if ball.translation.y + BALL_DIMENSION / 2. > crate::WINDOW_HEIGHT / 2. - SCOREBAR_HEIGHT
+            && velocity.0.y > 0.
+        {
             velocity.0.y *= -1.;
         }
 
         for paddle in &paddles {
-            // Axis-Aligned Bounding Box (AABB) overlap test.
-            // The ball (15 px square) overlaps the paddle (10×70 px) when:
-            //   • horizontally: the ball's left edge is past the paddle's left
-            //     AND the ball's right edge is past the paddle's right — i.e.
-            //     the ball's x span fully straddles the paddle's thin x column.
-            //   • vertically: the spans intersect (standard interval overlap).
-            if ball.translation.x - BALL_DIMENSION / 2. < paddle.translation.x - PADDLE_WIDTH / 2.
+            // AABB overlap: the ball (15 px) fully straddles the narrow paddle
+            // column (10 px wide) horizontally, and their y spans intersect.
+            let overlapping = ball.translation.x - BALL_DIMENSION / 2.
+                < paddle.translation.x - PADDLE_WIDTH / 2.
                 && ball.translation.x + BALL_DIMENSION / 2.
                     > paddle.translation.x + PADDLE_WIDTH / 2.
                 && ball.translation.y + BALL_DIMENSION / 2.
                     > paddle.translation.y - PADDLE_HEIGHT / 2.
                 && ball.translation.y - BALL_DIMENSION / 2.
-                    < paddle.translation.y + PADDLE_HEIGHT / 2.
-            {
-                // Reverse both axes so the ball heads back toward the centre.
-                velocity.0 *= -1.;
-                // Add randomised vertical angle to keep rallies unpredictable.
-                // rand::rng() creates a thread-local RNG seeded from the OS.
-                let mut rng = rand::rng();
-                let up = rng.random_bool(0.5);
-                if up {
-                    velocity.0.y = rng.random_range(-100..-20) as f32;
+                    < paddle.translation.y + PADDLE_HEIGHT / 2.;
+
+            if overlapping {
+                let is_left_paddle = paddle.translation.x < 0.;
+                // Direction guard: only bounce when the ball is actually moving
+                // toward this paddle. Without this, a ball already moving away
+                // (e.g. still inside the paddle from the previous frame) would
+                // get its velocity flipped again and become stuck.
+                let approaching = if is_left_paddle {
+                    velocity.0.x < 0.
                 } else {
-                    velocity.0.y = rng.random_range(20..100) as f32;
+                    velocity.0.x > 0.
+                };
+
+                if approaching {
+                    // Depenetration: push the ball flush against the paddle's
+                    // outward face so it can't tunnel further in on the next frame.
+                    if is_left_paddle {
+                        ball.translation.x =
+                            paddle.translation.x + PADDLE_WIDTH / 2. + BALL_DIMENSION / 2.;
+                    } else {
+                        ball.translation.x =
+                            paddle.translation.x - PADDLE_WIDTH / 2. - BALL_DIMENSION / 2.;
+                    }
+
+                    velocity.0.x *= -1.;
+                    let mut rng = rand::rng();
+                    let up = rng.random_bool(0.5);
+                    if up {
+                        velocity.0.y = rng.random_range(-100..-20) as f32;
+                    } else {
+                        velocity.0.y = rng.random_range(20..100) as f32;
+                    }
                 }
             }
         }

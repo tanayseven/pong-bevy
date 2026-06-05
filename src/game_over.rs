@@ -44,7 +44,7 @@ pub fn spawn_game_over(mut commands: Commands, winner: Option<Res<Winner>>) {
                 TextColor(Color::WHITE),
             ));
             p.spawn((
-                Text::new("ENTER — Rematch   ESC — Menu"),
+                Text::new("ENTER - Rematch   ESC - Menu"),
                 TextFont { font_size: 24.0, ..default() },
                 TextColor(Color::srgb(0.7, 0.7, 0.7)),
             ));
