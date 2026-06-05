@@ -76,6 +76,7 @@ pub fn spawn_hud(mut commands: Commands, score: Res<Score>, assets: Res<GameAsse
             left: Val::Px(145.),
             ..default()
         },
+        ZIndex(1),
         LeftScoreText,
         DespawnOnExit(AppState::Playing),
     ));
@@ -90,6 +91,7 @@ pub fn spawn_hud(mut commands: Commands, score: Res<Score>, assets: Res<GameAsse
             right: Val::Px(145.),
             ..default()
         },
+        ZIndex(1),
         RightScoreText,
         DespawnOnExit(AppState::Playing),
     ));
